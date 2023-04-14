@@ -28,16 +28,21 @@ const routes = [
       },
     ],
   },
+  //   {
+  //     path: "/ladder",
+  //     component: () => import("@/layouts/default/Default.vue"),
+  //     children: [
+  //       {
+  //         path: "",
+  //         name: "Ladder",
+  //         component: () => import("@/views/Ladder.vue"),
+  //       },
+  //     ],
+  //   },
+
   {
-    path: "/ladder",
-    component: () => import("@/layouts/default/Default.vue"),
-    children: [
-      {
-        path: "",
-        name: "Ladder",
-        component: () => import("@/views/Ladder.vue"),
-      },
-    ],
+    path: "/:catchAll(.*)",
+    component: () => import("@/views/notFound.vue"),
   },
 ];
 
