@@ -7,7 +7,7 @@ import moment from 'moment';
 
 const newProduct = ref(null);
 const selectedProduct = ref(null);
-const drawer = ref(null);
+const dialog = ref(null);
 const snackbar = ref(null);
 const rotating = ref(false);
 const canvas = ref(null);
@@ -152,31 +152,6 @@ const addNewProduct = () => {
 </script>
 
 <template>
-    <v-navigation-drawer v-model="drawer" location="bottom" temporary>
-        <div>
-            <v-text-field clearable label="새 메뉴" v-model="newProduct" append-icon="mdi-language-go"
-                @click:append="addNewProduct"></v-text-field>
-            <v-card title="사용 메뉴" subtitle="">
-                <template #text>
-                    <v-chip v-if="products.length" v-for='(product, prdIdx) in useProducts' :key='`${prdIdx}_${product}`'
-                        class="ma-2" size="x-large" closable :color="colors[prdIdx % (colors.length - 1)]"
-                        @click:close="onClickUseChip(product)">
-                        {{ product }}
-                    </v-chip>
-                </template>
-            </v-card>
-            <v-card title="미사용 메뉴" subtitle="">
-                <template #text>
-                    <v-chip v-if="products.length" v-for='(product, prdIdx) in unUsedProducts' :key='`${prdIdx}_${product}`'
-                        class="ma-2" size="x-large" closable :color="colors[prdIdx % (colors.length - 1)]"
-                        @click:close="onClickUnUseChip(product)">
-                        {{ product }}
-                    </v-chip>
-                </template>
-            </v-card>
-        </div>
-    </v-navigation-drawer>
-
     <v-snackbar v-model="snackbar" location="top">
         <span class="text-3xl">
             {{ selectedProduct }}
@@ -188,14 +163,55 @@ const addNewProduct = () => {
         </template>
     </v-snackbar>
     <div class="my-4 p-4">
-        <div>
-            <v-btn density="comfortable" prepend-icon="mdi-archive-edit-outline" @click="drawer = !drawer">선택지 편집</v-btn>
-            <!-- <v-btn density="comfortable" prepend-icon="mdi-archive-edit-outline" @click="onClickTest">TEst</v-btn> -->
-            <!-- {{ useProducts }} -->
-        </div>
+        <v-dialog v-model="dialog">
+            <template v-slot:activator="{ props }">
+                <v-btn density="comfortable" prepend-icon="mdi-archive-edit-outline" v-bind="props">선택지 편집</v-btn>
+            </template>
+            <v-card>
+                <v-card-text>
+                    <v-container>
+                        <v-row>
+                            <v-col cols="12">
+                                <v-text-field clearable label="새 메뉴" v-model="newProduct" append-icon="mdi-language-go"
+                                    @click:append="addNewProduct"></v-text-field>
+                                <v-card title="사용 메뉴" subtitle="">
+                                    <template #text>
+                                        <v-chip v-if="products.length" v-for='(product, prdIdx) in useProducts'
+                                            :key='`${prdIdx}_${product}`' class="ma-2" closable
+                                            :color="colors[prdIdx % (colors.length - 1)]" @click="onClickUseChip(product)">
+                                            <template #default>
+                                                <span class="text-black">{{ product }}</span>
+                                            </template>
+                                        </v-chip>
+                                    </template>
+                                </v-card>
+                                <v-card title="미사용 메뉴" subtitle="">
+                                    <template #text>
+                                        <v-chip v-if="products.length" v-for='(product, prdIdx) in unUsedProducts'
+                                            :key='`${prdIdx}_${product}`' class="ma-2" closable
+                                            :color="colors[prdIdx % (colors.length - 1)]"
+                                            @click="onClickUnUseChip(product)">
+                                            <template #default>
+                                                <span class="text-black">{{ product }}</span>
+                                            </template>
+                                        </v-chip>
+                                    </template>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+                        닫기
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
+    <div class="text-h4 mb-6 text-center">"딴 소리 없기"</div>
     <div class="roullet mb-[100px] mx-auto">
-
         <canvas ref='canvas' width="380" height='380' class="mb-12"></canvas>
         <button class="rock" :disabled="rotating" @click="rotate()">룰렛 돌리기</button>
     </div>
