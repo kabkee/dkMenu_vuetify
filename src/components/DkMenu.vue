@@ -79,6 +79,15 @@ const createContent = (contents) => {
     return created.join('<br>');
 }
 
+const formatThousands = (num) => {
+    return (
+        Number(num)
+            .toString()
+            .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
+    );
+};
+
+
 </script>
 
 
@@ -100,39 +109,59 @@ const createContent = (contents) => {
         </template>
     </v-app-bar>
 
-    <v-main class="pt-4">
+    <v-main class="pt-0">
         <v-container fluid>
             <v-row dense>
                 <v-col cols="12" v-if="theMenuDate && theMenuDate.content">
-                    <v-card :subtitle="theMenuDate.content.breakfast.content[0]">
+                    <v-card :subtitle="theMenuDate.content.breakfast.content[0]" class="my-2">
                         <template #title>
-                            <span class="font-bold">아침</span>
+                            <span class="font-bold">
+                                <span>아침</span>
+                                <v-chip class='ml-4' v-if="theMenuDate.content.breakfast.price">
+                                    <v-icon start icon='mdi-currency-krw'></v-icon> {{
+                                        formatThousands(theMenuDate.content.breakfast.price) }}
+                                </v-chip></span>
                         </template>
                         <template #text>
                             <p class="text-xl pl-4" v-html="createContent(theMenuDate.content.breakfast.content)"></p>
                         </template>
                     </v-card>
-                    <v-card :subtitle="theMenuDate.content.lunch.content[0]">
+                    <v-card :subtitle="theMenuDate.content.lunch.content[0]" class="my-2">
                         <template #title>
-                            <span class="font-bold">점심</span>
+                            <span class="font-bold">
+                                <span>점심 </span>
+                                <v-chip class='ml-4' v-if="theMenuDate.content.lunch.price">
+                                    <v-icon start icon='mdi-currency-krw'></v-icon> {{
+                                        formatThousands(theMenuDate.content.lunch.price) }}
+                                </v-chip></span>
                         </template>
                         <template #text>
                             <p class="text-xl pl-4" v-html="createContent(theMenuDate.content.lunch.content)"></p>
 
                         </template>
                     </v-card>
-                    <v-card :subtitle="theMenuDate.content.dinner.content[0]">
+                    <v-card :subtitle="theMenuDate.content.dinner.content[0]" class="my-2">
                         <template #title>
-                            <span class="font-bold">저녁</span>
+                            <span class="font-bold">
+                                <span>저녁 </span>
+                                <v-chip class='ml-4' v-if="theMenuDate.content.dinner.price">
+                                    <v-icon start icon='mdi-currency-krw'></v-icon> {{
+                                        formatThousands(theMenuDate.content.dinner.price) }}
+                                </v-chip></span>
                         </template>
                         <template #text>
                             <p class="text-xl pl-4" v-html="createContent(theMenuDate.content.dinner.content)"></p>
 
                         </template>
                     </v-card>
-                    <v-card :subtitle="theMenuDate.content.etc.content[0]">
+                    <v-card :subtitle="theMenuDate.content.etc.content[0]" class="my-2">
                         <template #title>
-                            <span class="font-bold">기타</span>
+                            <span class="font-bold">
+                                <span>기타 </span>
+                                <v-chip class='ml-4' v-if="theMenuDate.content.etc.price">
+                                    <v-icon start icon='mdi-currency-krw'></v-icon> {{
+                                        formatThousands(theMenuDate.content.etc.price) }}
+                                </v-chip></span>
                         </template>
                         <template #text>
                             <p class="text-xl pl-4" v-html="createContent(theMenuDate.content.etc.content)"></p>
