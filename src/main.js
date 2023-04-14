@@ -7,6 +7,7 @@
 // Components
 import "../index.css";
 import App from "./App.vue";
+import "./registerServiceWorker";
 
 // Composables
 import { createApp } from "vue";
