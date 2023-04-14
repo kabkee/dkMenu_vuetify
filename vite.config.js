@@ -17,6 +17,7 @@ export default defineConfig({
       autoImport: true,
     }),
   ],
+  publicPath: "",
   define: { "process.env": {} },
   resolve: {
     alias: {
