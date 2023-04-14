@@ -1,60 +1,105 @@
 <script setup>
 import { computed } from '@vue/reactivity';
 import { onMounted, ref } from 'vue';
+import { useStorage } from '@vueuse/core'
+import moment from 'moment';
+
 
 const newProduct = ref(null);
 const selectedProduct = ref(null);
+const drawer = ref(null);
 const snackbar = ref(null);
 const rotating = ref(false);
 const canvas = ref(null);
-const products = ref([
-    "손가네", '용짜장', "맘스터치", "교직원식당", "한양김치찌개", "빨간파이프"
-]);
+const presetProducts = [
+    "손가네", '용짜장', "맘스터치", "교직원식당", "한양김치찌개", "빨간파이프", "큰맘할매", "마카모인", "서브웨이", "천향마라탕"
+];
+const useProducts = useStorage('use-products', []);
+const products = useStorage('products', []);
+
 const colors = ref(["#dc0936", "#e6471d", "#f7a416", "#efe61f ", "#60b236", "#209b6c", "#169ed8", "#3f297e", "#87207b", "#be107f", "#e7167b"]);
 
+
+// computed
 const ctx = computed(() => {
     return canvas.value.getContext(`2d`);
 })
-onMounted(() => {
-    newMake();
+const unUsedProducts = computed(() => {
+    return products.value.filter((item) => {
+        return !useProducts.value.includes(item);
+    })
 })
 
 
+// onMounted
+onMounted(() => {
+    // 사용 제품 목록 확인
+    if (!products.value.length) {
+        products.value = presetProducts;
+    }
+    newMake();
+})
+const onClickTest = () => {
+    useProducts.value = [];
+}
+
 const newMake = () => {
     const [cw, ch] = [canvas.value.width / 2, canvas.value.height / 2];
-    const arc = Math.PI / (products.value.length / 2);
+    const arc = Math.PI / (useProducts.value.length / 2);
+    if (useProducts.value.length > 1) {
+        for (let i = 0; i < useProducts.value.length; i++) {
+            ctx.value.beginPath();
+            ctx.value.fillStyle = colors.value[i % (colors.value.length - 1)];
+            ctx.value.moveTo(cw, ch);
+            ctx.value.arc(cw, ch, cw, arc * (i - 1), arc * i);
+            ctx.value.fill();
+            ctx.value.closePath();
+        }
 
-    for (let i = 0; i < products.value.length; i++) {
+        ctx.value.fillStyle = "#000";
+        ctx.value.font = "18px Pretendard";
+        ctx.value.textAlign = "center";
+
+        for (let i = 0; i < useProducts.value.length; i++) {
+            const angle = (arc * i) + (arc / 2);
+
+            ctx.value.save();
+
+            ctx.value.translate(
+                cw + Math.cos(angle) * (cw - 50),
+                ch + Math.sin(angle) * (ch - 50),
+            );
+
+            ctx.value.rotate(angle + Math.PI / 2);
+
+            useProducts.value[i].split(" ").forEach((text, j) => {
+                ctx.value.fillText(text, 0, 30 * j);
+            });
+
+            ctx.value.restore();
+        }
+    } else {
         ctx.value.beginPath();
-        ctx.value.fillStyle = colors.value[i % (colors.value.length - 1)];
+        ctx.value.fillStyle = colors.value[0];
         ctx.value.moveTo(cw, ch);
-        ctx.value.arc(cw, ch, cw, arc * (i - 1), arc * i);
+        ctx.value.arc(cw, ch, cw, 0, Math.PI * 2);
         ctx.value.fill();
         ctx.value.closePath();
-    }
-
-    ctx.value.fillStyle = "#000";
-    ctx.value.font = "18px Pretendard";
-    ctx.value.textAlign = "center";
-
-    for (let i = 0; i < products.value.length; i++) {
-        const angle = (arc * i) + (arc / 2);
 
         ctx.value.save();
 
-        ctx.value.translate(
-            cw + Math.cos(angle) * (cw - 50),
-            ch + Math.sin(angle) * (ch - 50),
-        );
+        ctx.value.fillStyle = "#000";
+        ctx.value.font = "30px Pretendard";
+        ctx.value.textAlign = "center";
 
-        ctx.value.rotate(angle + Math.PI / 2);
-
-        products.value[i].split(" ").forEach((text, j) => {
-            ctx.value.fillText(text, 0, 30 * j);
-        });
-
+        if (useProducts.value.length >= 1) {
+            ctx.value.fillText('2개 이상 골라주세요.', cw, ch);
+        } else {
+            ctx.value.fillText('메뉴를 선택해주세요.', cw, ch);
+        }
         ctx.value.restore();
     }
+
 }
 
 const rotate = () => {
@@ -65,10 +110,10 @@ const rotate = () => {
 
     setTimeout(() => {
 
-        const ran = Math.floor(Math.random() * products.value.length);
+        const ran = Math.floor(Math.random() * useProducts.value.length);
 
-        const arc = 360 / products.value.length;
-        const rotate = (ran * arc) + 3600 + (arc * 3 / 9 * products.value.length) - (arc / 4 / 9 * products.value.length);
+        const arc = 360 / useProducts.value.length;
+        const rotate = (ran * arc) + 3600 + (arc * 3 / 9 * useProducts.value.length) - (arc / 4 / 9 * useProducts.value.length);
 
         canvas.value.style.transform = `rotate(-${rotate}deg)`;
         canvas.value.style.transition = `2s`;
@@ -76,32 +121,62 @@ const rotate = () => {
         setTimeout(() => {
 
             rotating.value = false;
-            selectedProduct.value = products.value[ran];
+            selectedProduct.value = useProducts.value[ran] == presetProducts[0] ? '또가네(?)' : useProducts.value[ran];
             snackbar.value = true;
 
         }, 2000);
     }, 1);
 };
 
-const onClickRemoveChip = (product) => {
-    const newPrds = products.value.filter(item => {
+const onClickUseChip = (product) => {
+
+    const newPrds = useProducts.value.filter(item => {
         console.info(item, product)
         return item !== product;
     });
+    useProducts.value = [...newPrds]
+    newMake();
+}
 
-    products.value = [...newPrds]
+const onClickUnUseChip = (product) => {
+    useProducts.value.push(product);
     newMake();
 }
 
 const addNewProduct = () => {
-    let newProducts = [...products.value];
+    let newProducts = [...useProducts.value];
     newProducts.push(newProduct.value);
-    products.value = [...newProducts]
+    useProducts.value = [...newProducts]
     newMake();
 }
 </script>
 
 <template>
+    <v-navigation-drawer v-model="drawer" location="bottom" temporary>
+        <div>
+            <v-text-field clearable label="새 메뉴" v-model="newProduct" append-icon="mdi-language-go"
+                @click:append="addNewProduct"></v-text-field>
+            <v-card title="사용 메뉴" subtitle="">
+                <template #text>
+                    <v-chip v-if="products.length" v-for='(product, prdIdx) in useProducts' :key='`${prdIdx}_${product}`'
+                        class="ma-2" size="x-large" closable :color="colors[prdIdx % (colors.length - 1)]"
+                        @click:close="onClickUseChip(product)">
+                        {{ product }}
+                    </v-chip>
+                </template>
+            </v-card>
+            <v-card title="미사용 메뉴" subtitle="">
+                <template #text>
+                    <v-chip v-if="products.length" v-for='(product, prdIdx) in unUsedProducts' :key='`${prdIdx}_${product}`'
+                        class="ma-2" size="x-large" closable :color="colors[prdIdx % (colors.length - 1)]"
+                        @click:close="onClickUnUseChip(product)">
+                        {{ product }}
+                    </v-chip>
+                </template>
+            </v-card>
+        </div>
+    </v-navigation-drawer>
+
     <v-snackbar v-model="snackbar" location="top">
         <span class="text-3xl">
             {{ selectedProduct }}
@@ -113,19 +188,15 @@ const addNewProduct = () => {
         </template>
     </v-snackbar>
     <div class="my-4 p-4">
-        <v-text-field clearable label="새 메뉴" v-model="newProduct" append-icon="mdi-language-go"
-            @click:append="addNewProduct"></v-text-field>
-
-        <div class="text-center">
-            <v-chip v-if="products.length" v-for='(product, prdIdx) in products' :key='`${prdIdx}_${product}`' class="ma-2"
-                size="x-large" closable :color="colors[prdIdx % (colors.length - 1)]"
-                @click:close="onClickRemoveChip(product)">
-                {{ product }} {{ prdIdx }}
-            </v-chip>
+        <div>
+            <v-btn density="comfortable" prepend-icon="mdi-archive-edit-outline" @click="drawer = !drawer">선택지 편집</v-btn>
+            <!-- <v-btn density="comfortable" prepend-icon="mdi-archive-edit-outline" @click="onClickTest">TEst</v-btn> -->
+            <!-- {{ useProducts }} -->
         </div>
     </div>
-    <div class="roullet mb-[100px]">
-        <canvas ref='canvas' width="380" height='380'></canvas>
+    <div class="roullet mb-[100px] mx-auto">
+
+        <canvas ref='canvas' width="380" height='380' class="mb-12"></canvas>
         <button class="rock" :disabled="rotating" @click="rotate()">룰렛 돌리기</button>
     </div>
 </template>

@@ -8,6 +8,7 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/dkm/",
   plugins: [
     vue({
       template: { transformAssetUrls },
@@ -17,7 +18,6 @@ export default defineConfig({
       autoImport: true,
     }),
   ],
-  publicPath: "",
   define: { "process.env": {} },
   resolve: {
     alias: {

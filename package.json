@@ -5,11 +5,11 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "predeploy": "yarn build",
         "deploy": "gh-pages -d dist"
     },
     "dependencies": {
         "@mdi/font": "7.0.96",
+        "@vueuse/core": "^10.0.0",
         "axios": "^1.3.5",
         "moment": "^2.29.4",
         "pinia": "^2.0.23",
