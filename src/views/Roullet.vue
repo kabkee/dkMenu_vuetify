@@ -103,6 +103,15 @@ const newMake = () => {
 }
 
 const rotate = () => {
+    if (useProducts.value.length < 2) {
+        if (useProducts.value.length < 1) {
+            selectedProduct.value = '메뉴를 선택해주세요.';
+        } else {
+            selectedProduct.value = '2개 이상 선택해주세요.';
+        }
+        snackbar.value = true;
+        return;
+    }
     snackbar.value = false;
     rotating.value = true;
     canvas.value.style.transform = `initial`;
