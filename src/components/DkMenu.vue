@@ -32,9 +32,11 @@ axios(requestUrl).then((response) => {
         return;
     })
 })
+
+const weekdayTitle = ['', '월', '화', '수', '목', '금', '토', '일'];
 const dateTitle = computed(() => {
     if (dkMenu.value && dkMenu.value[dkMenuCurrentIdx.value]) {
-        return `${dkMenu.value[dkMenuCurrentIdx.value].date.normal} ${dkMenu.value[dkMenuCurrentIdx.value].date.today ? '[오늘]' : ''}`
+        return `${dkMenu.value[dkMenuCurrentIdx.value].date.normal}(${weekdayTitle[moment(dkMenu.value[dkMenuCurrentIdx.value].date.normal).weekday()]}) ${dkMenu.value[dkMenuCurrentIdx.value].date.today ? '[오늘]' : ''}`
     }
     return today.value;
 })
