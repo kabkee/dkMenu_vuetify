@@ -13,7 +13,7 @@ const today = ref(moment().format('YYYY-MM-DD'));
 const todayData = ref(null);
 
 
-let requestUrl = 'https://kindcrawler.azurewebsites.net/dkmenu';
+let requestUrl = 'https://kabkee.azurewebsites.net/dkmenu';
 // requestUrl = 'http://localhost:3000/dkmenu';
 
 axios(requestUrl).then((response) => {
