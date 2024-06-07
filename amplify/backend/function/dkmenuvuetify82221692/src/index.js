@@ -15,7 +15,7 @@ exports.handler = async (event) => {
     // console.log(`EVENT: ${JSON.stringify(event)}`);
 
     // 허용된 오리진 목록
-    const allowedOrigins = ['https://kabkee.github.io/dkMenu_vuetify', 'http://localhost:3001'];
+    const allowedOrigins = ['https://kabkee.github.io', 'http://localhost:3001'];
     const origin = event.headers.origin;
 
     // 요청한 오리진이 허용된 오리진 목록에 있는지 확인
