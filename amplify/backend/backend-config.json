@@ -1,0 +1,43 @@
+{
+  "api": {
+    "dkmenuapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "dkmenuvuetify82221692"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "function": {
+    "dkmenuvuetify82221692": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_dkmenuvuetify82221692_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "dkmenuvuetify82221692"
+        }
+      ]
+    },
+    "AMPLIFY_function_dkmenuvuetify82221692_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "dkmenuvuetify82221692"
+        }
+      ]
+    }
+  }
+}
