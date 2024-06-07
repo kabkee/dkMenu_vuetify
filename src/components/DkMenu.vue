@@ -9,6 +9,7 @@ import { get } from 'aws-amplify/api';
 axios.defaults.withCredentials = false;
 const cookies = useCookies(['menuType']);
 
+const dkMenuLoading = ref(false);
 const dkMenuType = ref(null);
 const dkMenuOfficer = ref(null);
 const dkMenuStudent = ref(null);
@@ -44,10 +45,9 @@ onBeforeMount(() => {
     //     })
     // })
     callApi();
-
-
 })
 async function callApi() {
+    dkMenuLoading.value = true;
     try {
         const restOperation = get({
             apiName: 'dkmenuapi',
@@ -82,6 +82,7 @@ async function callApi() {
     } catch (error) {
         console.error('API 호출 오류:', error);
     }
+    dkMenuLoading.value = false;
 }
 
 watch(dkMenuType, (newValue) => {
@@ -160,6 +161,9 @@ const formatThousands = (num) => {
 
 
 <template>
+     <div v-if="dkMenuLoading" class="fixed d-flex left-0 top-0 w-full h-full align-center justify-center mt-5 bg-gray-500/40 z-10">
+        <v-progress-circular indeterminate color="primary" :size="50"></v-progress-circular>
+    </div>
     <v-app-bar :color="barTheme">
         <template v-slot:prepend>
             <v-icon icon="mdi-arrow-left" v-if="dkMenuCurrentIdx > 0" @click="dkMenuCurrentIdx -= 1"></v-icon>
@@ -178,6 +182,7 @@ const formatThousands = (num) => {
     </v-app-bar>
 
     <v-main class="pt-0">
+       
         <v-container fluid>
             <div class="d-flex flex-column align-center bg-grey-lighten-4 pa-2">
                 <v-btn-toggle v-model="dkMenuType" color="blue-darken-1">
