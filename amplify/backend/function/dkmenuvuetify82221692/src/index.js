@@ -14,11 +14,18 @@ let cachedData = null;
 exports.handler = async (event) => {
     // console.log(`EVENT: ${JSON.stringify(event)}`);
 
+    // 허용된 오리진 목록
+    const allowedOrigins = ['https://kabkee.github.io/dkMenu_vuetify', 'http://localhost:3001'];
+    const origin = event.headers.origin;
+
+    // 요청한 오리진이 허용된 오리진 목록에 있는지 확인
+    const isAllowedOrigin = allowedOrigins.includes(origin);
+
     if(cachedData){
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // Restrict this to domains you trust
+                "Access-Control-Allow-Origin": isAllowedOrigin ? origin : '', // Restrict this to domains you trust
                 "Access-Control-Allow-Headers": "*", // Specify only the headers you need to allow
             },
             body: JSON.stringify(cachedData),
@@ -41,7 +48,7 @@ exports.handler = async (event) => {
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // Restrict this to domains you trust
+                "Access-Control-Allow-Origin": isAllowedOrigin ? origin : '', // Restrict this to domains you trust
                 "Access-Control-Allow-Headers": "*", // Specify only the headers you need to allow
             },
             body: JSON.stringify(cachedData),
