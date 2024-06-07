@@ -85,8 +85,13 @@ async function callApi() {
     dkMenuLoading.value = false;
 }
 
-watch(dkMenuType, (newValue) => {
-    cookies.set('menuType', newValue);
+watch(dkMenuType, (newValue, oldValue) => {
+    let type = newValue;
+    if(!type){
+        type = oldValue;
+    }
+    dkMenuType.value = type;
+    cookies.set('menuType', type);
     //   console.log(`dkMenuType:: ${newValue}`)
 });
 
